@@ -8,7 +8,10 @@
 
 *My journey began in February of 2025 with the Break Into Tech Data Analytics Certificate Course*
 
-### Things I learned during the Course
+### Things I did not learn during the course:  
+*How to properly format GitHub .md pages
+
+### Things I learned during the course
 
 *Basics of SQL:
 ```
@@ -26,6 +29,7 @@ SUM
 COUNT
 ```
 *How to use the above functions to query databases to answer basic questions about a store's inventory and prices. See [Superstore Database](https://github.com/UseUrImagination917/SQL/blob/main/Superstore%20Database)  
+
 *Basic Logic Functions:
 ```
 AND
