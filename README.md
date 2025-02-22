@@ -25,4 +25,9 @@ MIN
 SUM
 COUNT
 ```
-*How to use the above functions to query databases to answer basic questions about a store's inventory and prices. See [Superstore Database](https://github.com/UseUrImagination917/SQL/blob/main/Superstore%20Database)
+*How to use the above functions to query databases to answer basic questions about a store's inventory and prices. See [Superstore Database](https://github.com/UseUrImagination917/SQL/blob/main/Superstore%20Database)  
+*Basic Logic Functions:
+```
+AND
+OR
+```
