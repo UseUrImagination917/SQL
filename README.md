@@ -22,6 +22,7 @@ SELECT
 FROM
 WHERE
 ORDER BY
+GROUP BY
 ```
 *Aggregate Functions:
 ```
@@ -44,4 +45,13 @@ OR
 IN  
 NOT IN
 DISTINCT
+```
+
+*Other Advanced SQL Basics:
+```
+CASE
+HAVING
+THEN
+ELSE
+END AS
 ```
