@@ -8,6 +8,9 @@
 
 *My journey began in February of 2025 with the Break Into Tech Data Analytics Certificate Course*
 
+### Resources  
+*[w3schools SQL Dictionary](https://www.w3schools.com/sql/)
+
 ### Things I did not learn during the course:  
 *How to properly format GitHub .md pages
 
