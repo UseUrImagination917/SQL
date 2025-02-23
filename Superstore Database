@@ -50,9 +50,12 @@ ORDER BY price desc
 ;
 
 --Write your own SQL query that will show a statistic about the item prices, like a sum, average, minimum, maximum, or count.
-SELECT AVG(price)
+SELECT ROUND(AVG(price),2) AS rounded_avg, category
 FROM superstore
+GROUP BY category
 ;
+--The above shows average price for each category of items, rounded to 2 decimal places, since it represents currency. It also renames the field from "ROUND(AVG(price),2)" to "rounded_avg".
+--I am quite proud of this one as a beginner, as I had to look up the ROUND and AS functions separately from the course. They had not yet been covered.
 
 --Write your own SQL query that will show a statistic about the price for items in the category of "Kitchen Supplies".
 SELECT AVG(price), category
