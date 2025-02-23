@@ -35,3 +35,10 @@ COUNT
 AND
 OR
 ```
+
+*Subqueries and ETL/Data Cleaning
+```
+IN  
+NOT IN
+DISTINCT
+```
