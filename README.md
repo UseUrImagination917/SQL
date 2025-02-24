@@ -55,3 +55,12 @@ THEN
 ELSE
 END AS
 ```
+
+*How to Join related tables in a database, and how to use multiple JOIN clauses in one query:  
+```
+LEFT JOIN  
+INNER JOIN  
+RIGHT JOIN
+FULL JOIN
+ON
+```
