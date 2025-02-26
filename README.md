@@ -64,3 +64,5 @@ RIGHT JOIN
 FULL JOIN
 ON
 ```
+
+*The difference between database engines and RDBMS's. I chose to learn SQLite Studio in conjunction with SQLite.
