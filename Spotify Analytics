@@ -1,0 +1,63 @@
+#For this project, I downloaded Spotify data from Break Into Tech
+#Then I created a table to insert the data into.
+#Finally, I came up with a few questions about the data and figured out how to answer them
+
+#Below is where I created the table:
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+song_key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+song_mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness decimal(8,7) NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL )
+;
+
+#Then I inserted the Spotify Data .csv into the table.
+
+#Lastly, I tried to answer the following questions
+
+--What is the average danceability of the top ten most popular songs?
+WITH topTen AS (
+    SELECT danceability
+    FROM Spotifydata
+    ORDER BY popularity desc
+    LIMIT 10)
+SELECT avg(danceability)
+FROM topTen
+;
+
+--How many artists appear in this database multiple times?
+WITH multi_track AS(
+SELECT artist_name, COUNT(artist_name) as num_of_tracks
+FROM Spotifydata
+GROUP BY artist_name
+HAVING COUNT(artist_name)>1)
+SELECT COUNT(artist_name)
+FROM multi_track
+;
+
+--Calculate the average popularity for the artists in the Spotify data table. Then, for every artist with an average popularity of 90 or above, show their name, their average popularity, and label them as a “Top Star”.
+WITH avg_pop_by_artist AS (
+SELECT s.artist_name,
+AVG(s.popularity) AS average_popularity
+FROM SpotifyData s 
+GROUP BY s.artist_name
+)
+SELECT  artist_name
+,average_popularity
+,'Top Star' AS tag
+FROM avg_pop_by_artist
+WHERE average_popularity>=90
+;
