@@ -1,0 +1,285 @@
+--The below SQL project was created with the use of a database called "chinook". It is representative of a digital media store and contains 11 tables.
+
+--First time working with this database. We have the schema, but let's queue up a SELECT * LIMIT 3 from everything to take a look at what we have. Will list notes at end on table relationships:
+
+SELECT *
+FROM chinook.albums
+Limit 3
+;
+SELECT *
+FROM chinook.artists
+Limit 3
+;
+SELECT *
+FROM chinook.customers
+Limit 3
+;
+SELECT *
+FROM chinook.employees
+Limit 3
+;
+SELECT *
+FROM chinook.genres
+Limit 3
+;
+SELECT *
+FROM chinook.invoice_items
+Limit 3
+;
+SELECT *
+FROM chinook.invoices
+Limit 3
+;
+SELECT *
+FROM chinook.media_types
+Limit 3
+;
+SELECT *
+FROM chinook.playlist_track
+Limit 3
+;
+SELECT *
+FROM chinook.playlists
+Limit 3
+;
+SELECT *
+FROM chinook.tracks
+Limit 3
+;
+
+--OK. customers relates to invoices on CustomerId and employees on SupportRepId=EmployeeId. employees is self relating (EmployeeId=ReportsTo). Invoices relates to invoice_items on InvoiceId. Invoice_items relates to tracks on TrackId. 
+--Tracks seems to be the database hub, as it relates to 5 other tables: playlist_track, media_types, genres, invoice_items, and albums through various fields. Lastly, playlists and playlist_track relate to each other through PlaylistID
+
+--1. Show Customers (their full names, customer ID, and country) who are not in the US.
+
+SELECT LastName || ', ' || FirstName AS FullName
+, CustomerId
+, Country
+FROM chinook.customers
+WHERE Country != 'USA'
+ORDER BY FullName
+;
+
+--2. Show only the Customers from Brazil.
+
+SELECT LastName || ', ' || FirstName AS FullName
+, CustomerId
+, Country
+FROM chinook.customers
+WHERE Country = 'Brazil'
+ORDER BY FullName
+;
+
+--3. Find the Invoices of customers who are from Brazil. The resulting table should show the customer's full name, Invoice ID, Date of the invoice, and billing country.
+
+SELECT c.LastName || ', ' || c.FirstName AS FullName
+, i.InvoiceId
+, i.InvoiceDate
+, i.BillingCountry
+FROM chinook.customers c
+JOIN chinook.invoices i
+ON c.CustomerId = i.CustomerId
+WHERE c.Country = 'Brazil'
+;
+
+--4. Show the Employees who are Sales Agents.
+
+SELECT LastName || ', ' || FirstName AS FullName
+, EmployeeId
+, Title
+FROM chinook.employees
+WHERE Title LIKE '%Agent'
+ORDER BY FullName
+;
+
+--5. Find a unique/distinct list of billing countries from the Invoice table.
+
+SELECT DISTINCT BillingCountry
+FROM chinook.invoices
+ORDER BY BillingCountry
+;
+
+--6. Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.
+
+SELECT e.LastName || ', ' || e.FirstName AS SalesAgent
+, i.InvoiceID
+FROM chinook.invoices i
+LEFT JOIN chinook.customers c
+ON i.CustomerID = c.CustomerID
+LEFT JOIN chinook.employees e
+ON c.SupportRepID = e.EmployeeID
+ORDER BY SalesAgent, InvoiceID
+;
+
+--7. Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+
+SELECT i.Total
+, c.LastName || ', ' || c.FirstName AS CustomerName
+, i.BillingCountry
+, c.Country
+, e.LastName || ', ' || e.FirstName AS SalesAgent
+FROM chinook.invoices i
+FULL JOIN chinook.customers c
+ON i.CustomerId = c.CustomerId
+LEFT JOIN chinook.employees e
+ON c.SupportRepId = e.EmployeeId
+ORDER BY CustomerName, i.Total
+;
+
+--8. How many Invoices were there in 2009?
+
+SELECT COUNT(InvoiceId)
+FROM chinook.invoices
+WHERE InvoiceDate LIKE '%2009%'
+;
+
+--9. What are the total sales for 2009?
+
+SELECT SUM(Total)
+FROM chinook.invoices
+WHERE InvoiceDate LIKE '%2009%'
+;
+
+--10. Write a query that includes the purchased track name with each invoice line ID.
+
+SELECT i_i.InvoiceLineId
+, t.name
+FROM chinook.invoice_items i_i
+LEFT JOIN chinook.tracks t
+ON i_i.TrackId = t.TrackId
+ORDER BY t.Name
+;
+
+--11. Write a query that includes the purchased track name AND artist name with each invoice line ID.
+
+SELECT i_i.InvoiceLineId
+, t.Name as Track
+,ar.Name as Artist
+FROM chinook.invoice_items i_i
+
+LEFT JOIN chinook.tracks t
+ON i_i.TrackId = t.TrackId
+
+LEFT JOIN chinook.albums al
+ON t.AlbumId = al.AlbumID
+
+LEFT JOIN chinook.artists ar
+ON al.ArtistID = ar.ArtistID
+
+ORDER BY Artist
+;
+
+--12. Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+
+SELECT t.name Track
+, a.Title Album
+, m.Name MediaType
+, g.Name Genre
+FROM chinook.tracks t
+
+LEFT JOIN chinook.albums a
+ON t.AlbumId = a.AlbumID
+
+LEFT JOIN chinook.media_types m
+ON m.MediaTypeId = t.MediaTypeId
+
+LEFT JOIN chinook.genres g
+ON t.GenreId = g.GenreId
+ORDER BY Album
+;
+
+--13. Show the total sales made by each sales agent.
+
+SELECT 
+e.LastName || ', ' || e.FirstName AS SupportAgent
+, SUM(i.Total) AS TotalSales
+FROM chinook.employees e
+
+JOIN chinook.customers c 
+ON e.EmployeeId = c.SupportRepId
+
+JOIN chinook.invoices i 
+ON c.CustomerId = i.CustomerId
+
+WHERE e.Title = 'Sales Support Agent'
+GROUP BY e.EmployeeId
+ORDER BY TotalSales desc
+;
+
+--14. Which sales agent made the most dollars in sales in 2009?
+
+SELECT 
+e.LastName || ', ' || e.FirstName AS SupportAgent
+, SUM(i.Total) AS TotalSales
+FROM chinook.employees e
+
+JOIN chinook.customers c 
+ON e.EmployeeId = c.SupportRepId
+
+JOIN chinook.invoices i
+ON c.CustomerId = i.CustomerId
+
+WHERE e.Title = 'Sales Support Agent'
+  AND strftime('%Y', i.InvoiceDate) = '2009'
+  --Learned about string format time by prompting ChatGPT to write this query, hence the difference from the earlier query where I used WHERE InvoiceDate LIKE '%2009%'
+GROUP BY e.EmployeeId
+ORDER BY TotalSales DESC
+LIMIT 1
+;
+
+--The above 14 prompts were given as part of my BIT bootcamp. Below are a few questions about this database I created myself:
+
+--1. Is there a seasonal pattern in monthly sales (create datapoints that could be visualized on a chart)
+
+SELECT 
+strftime('%m', InvoiceDate) AS Month,
+SUM(Total) AS MonthlySales
+FROM chinook.invoices
+GROUP BY Month
+ORDER BY Month
+;
+
+--2. Who are the top 10 customers by number of purchases?
+
+SELECT c.LastName || ', ' || c.FirstName AS CustomerName
+, COUNT(i.InvoiceId) AS PurchaseCount
+FROM chinook.customers c
+LEFT JOIN chinook.invoices i 
+ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId
+ORDER BY PurchaseCount DESC
+LIMIT 10
+;
+
+--3. What are the top 5 genres by total sales?
+
+WITH TrackSales AS (
+    SELECT 
+    t.TrackId
+    , t.GenreId
+    , i_i.Quantity * i_i.UnitPrice AS SaleAmount
+    FROM invoice_items i_i
+    LEFT JOIN tracks t 
+    ON i_i.TrackId = t.TrackId
+)
+SELECT g.Name AS Genre
+, SUM(ts.SaleAmount) AS TotalSales
+FROM TrackSales ts
+LEFT JOIN genres g 
+ON ts.GenreId = g.GenreId
+GROUP BY g.GenreId
+ORDER BY TotalSales DESC
+LIMIT 5
+;
+
+--4. Rank ALL customers based on total spending
+
+SELECT c.LastName || ', ' || c.FirstName AS CustomerName
+, SUM(i.Total) AS TotalSpent
+, RANK() OVER (ORDER BY SUM(i.Total) DESC) AS SpendingRank
+FROM chinook.customers c
+LEFT JOIN chinook.invoices i 
+ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId
+ORDER BY SpendingRank
+;
